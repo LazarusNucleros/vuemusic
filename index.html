@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>VueMusic</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<div class="application-container">
+		<div id="player-library">
+			<div class="player__top-bar" id='top-bar'>
+				<div class="player-container player__top-bar-container">
+					<div class="player-logo"><span>Vue</span>Music</div>
+				</div>
+			</div>
+			<div class="player-library" >
+				<div class="player-container">
+					<div class="player-library__playlist">
+						<div class="player-library__playlist-item" v-for="item in main_playlist" :class="{'player-library__playlist-item--active':item.track_id == play_track_id }" @click="playThis(item.track_id)">
+							<button class="player-controls__button">
+								<i class="fas" :class="{'fa-play': item.track_id !== play_track_id, 'fa-music': item.track_id == play_track_id}"></i>
+							</button>
+							<div class="track-info">
+								<div class="track-title">{{ item.title}}</div>
+								<div class="track-author">{{ item.artist }}</div>
+							</div>
+							<div class="player__track-duration">{{ item.playtime }}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="player-current js-player">
+			<div class="player-container player-container__player-current">
+				<div class="play-progress">
+					<div class="play-progress-played js-slider"></div>
+				</div>
+				<div class="player-component">
+					<div class="player-controls">
+						<button class="player-controls__button player-controls__button--prev" @click="switchPrev()">
+							<i class="fas fa-fast-backward"></i>
+						</button>
+						<button class="player-controls__button player-controls__button--play" @click="changePlayerState()">
+							<i class="fas" :class="{'fa-play': !is_playing, 'fa-pause': is_playing}"></i>
+						</button>
+						<button class="player-controls__button player-controls__button--next" @click="switchNext()">
+							<i class="fas fa-fast-forward"></i>
+						</button>
+					</div>
+					<div class="player-current-track">
+						<div class="track-info" @click="openModalPlayer(true)">
+							<div class="track-title">{{ current_track.title }}</div>
+							<div class="track-author">{{ current_track.artist }}</div>
+						</div>
+					</div>
+				</div>
+				<div class="player-controls player__additional-controls">
+					<div class='play-progress-time'>{{ formatTime(playtime) }}/{{ current_track.playtime }}</div>
+					<span class="player-controls__button volume-control-button">
+						<i class="fas" :class="{'fa-volume-off': is_muted, 'fa-volume-up': !is_muted}" @click="toggleMute()"></i>
+						<div class="volume-control-popup">
+							<div class="volume-control-slider"></div>
+						</div>
+					</span>
+					<button class="player-controls__button" @click="is_random = !is_random" :class="{'player-controls__button--active': is_random}">
+						<i class="fas fa-random"></i>
+					</button>
+					<button class="player-controls__button" @click="toggleLoop()" :class="{'player-controls__button--active': is_loop}">
+						<i class="fas fa-redo"></i>
+					</button>
+				</div>
+			</div>
+		
+			<div class="mobile-fullplayer" v-show="is_modal_player_showed">
+		
+				<div class="mobile-fullplayer__wrapper">
+					<button class="mobile-fullplayer__close" @click="is_modal_player_showed = false; is_user_close_modalplayer = true">
+						<i class="fas fa-angle-down"></i>
+					</button>
+					<div class="mobile-fullplayer__track-cover"></div>
+					<div class="mobile-fullplayer__track-title">{{ current_track.title }}</div>
+					<div class="mobile-fullplayer__track-subtitle">{{ current_track.artist }}</div>
+		
+					<div class="mobile-fullplayer__track-player-wrap js-slider"></div>
+		
+					<div class="mobile-fullplayer__track-period">
+						<div class="mobile-fullplayer__track-time">{{ formatTime(playtime) }}</div>
+						<div class="mobile-fullplayer__track-time">{{ current_track.playtime }}</div>
+					</div>
+		
+					<div class="player-controls">
+						<button class="player-controls__button" @click="switchPrev()">
+							<i class="fas fa-fast-backward"></i>
+						</button>
+						<button class="player-controls__button player-controls__button--play" @click="changePlayerState()">
+							<i class="fas" :class="{'fa-play': !is_playing, 'fa-pause': is_playing}"></i>
+						</button>
+						<button class="player-controls__button" @click="switchNext()">
+							<i class="fas fa-fast-forward"></i>
+						</button>
+					</div>
+		
+					<div class="player-controls player-controls--additional">
+						<button class="player-controls__button" @click="is_random = !is_random" :class="{'player-controls__button--active': is_random}">
+							<i class="fas fa-random"></i>
+						</button>
+						<button class="player-controls__button" @click="toggleLoop()" :class="{'player-controls__button--active': is_loop}">
+							<i class="fas fa-redo"></i>
+						</button>
+						<button class="player-controls__button" @click="rewindTrack()">
+							<i class="fas fa-angle-double-right"></i><span>10</span>
+						</button>
+						
+					</div>
+		
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="vendor.js"></script>
+	<script src="main-min.js"></script>
+</body>
+</html>
